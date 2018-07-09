@@ -26,8 +26,11 @@
 
 # Loops over all polybench tests and calls the arguments with the path and the kernel name
 foralltests() {
-    CATEGORIES=("linear-algebra/blas" "linear-algebra/kernels" "linear-algebra/solvers" "datamining" "stencils" "medley")
-    for cat in $CATEGORIES; do
+    declare -a CATEGORIES=("linear-algebra/blas" "linear-algebra/kernels"
+                           "linear-algebra/solvers" "datamining" "stencils"
+                           "medley")
+    
+    for cat in "${CATEGORIES[@]}"; do
         for dir in $POLYBENCH_PATH/$cat/*; do 
             if [ -d "$dir" ]; then
                 $* $dir `basename $dir`
