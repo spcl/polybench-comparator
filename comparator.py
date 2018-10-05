@@ -28,13 +28,24 @@ VALUE_ATOL = 1e-5
 OVERALL_ATOL = 1e-4
 ACCEPTABLE_ERROR_PERCENTAGE = 25.0
 
-
-if len(sys.argv) != 3:
-    print("USAGE: comparator.py <REFERENCE FILE> <OUTPUT FILE>")
+def usage():
+    print("USAGE: comparator.py [-i] <REFERENCE FILE> <OUTPUT FILE>")
+    print("-i ignores newlines")
     sys.exit(2)
+    
+if len(sys.argv) < 3 or len(sys.argv) > 4:
+    usage()
 
-ref_file = sys.argv[1]
-cmp_file = sys.argv[2]
+if sys.argv[1] == '-i':
+    if len(sys.argv) != 4:
+        usage()
+    ref_file = sys.argv[2]
+    cmp_file = sys.argv[3]
+    ignore_newlines = True
+else:
+    ref_file = sys.argv[1]
+    cmp_file = sys.argv[2]
+    ignore_newlines = False
 
 total_error = 0.0
 num_errors = 0
@@ -44,9 +55,15 @@ with open(ref_file, 'rb') as rf:
     with open(cmp_file, 'rb') as cf:
         rlines = rf.readlines()
         clines = cf.readlines()
+
+        # Ignore newlines by pasting all the lines together
+        if ignore_newlines:
+            rlines = [b' '.join(rlines)]
+            clines = [b' '.join(clines)]
+            
         if len(rlines) != len(clines):
-            print('ERROR: Length mismatch! (%d != %d)' % (len(rlines), 
-                                                          len(clines)))
+            print('ERROR: Line count mismatch! (%d != %d)' % (len(rlines), 
+                                                              len(clines)))
             sys.exit(3)
 
         # Compare each line
