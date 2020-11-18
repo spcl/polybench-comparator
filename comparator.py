@@ -103,6 +103,8 @@ def compare(ref_file, cmp_file, ignore_newlines=False):
     if absdiff > OVERALL_ATOL or err_percentage > ACCEPTABLE_ERROR_PERCENTAGE:
         return False
 
+    return True
+
 
 if __name__ == "__main__":
     if len(sys.argv) < 3 or len(sys.argv) > 4:
