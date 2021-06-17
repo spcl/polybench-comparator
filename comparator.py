@@ -34,6 +34,20 @@ def usage():
     print("-i ignores newlines")
     sys.exit(2)
 
+def extract_array(f):
+    """
+    Extract only the lines between the BEGIN and END markers, ignoring any other
+    content of the file.
+    """
+    lines = []
+    for line in f:
+        if b"==BEGIN DUMP_ARRAYS==" in line:
+            break
+    for line in f:
+        if b"==END   DUMP_ARRAYS==" in line:
+            break
+        lines.append(line)
+    return lines
 
 def compare(ref_file, cmp_file, ignore_newlines=False):
     """
@@ -49,8 +63,9 @@ def compare(ref_file, cmp_file, ignore_newlines=False):
 
     with open(ref_file, 'rb') as rf:
         with open(cmp_file, 'rb') as cf:
-            rlines = rf.readlines()
-            clines = cf.readlines()
+            # Skip any content appearing before the array dump
+            rlines = extract_array(rf)
+            clines = extract_array(cf)
 
             # Ignore newlines by pasting all the lines together
             if ignore_newlines:
